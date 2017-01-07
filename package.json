@@ -1,0 +1,26 @@
+{
+  "name": "backup_app",
+  "version": "0.0.1",
+  "description": "backup linux system using rsync",
+  "main": "main.js",
+  "dependencies": {},
+  "devDependencies": {
+    "jest-cli": "^18.1.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rickmed/backup_app.git"
+  },
+  "author": "Ricardo Medina",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rickmed/backup_app/issues"
+  },
+  "homepage": "https://github.com/rickmed/backup_app#readme",
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

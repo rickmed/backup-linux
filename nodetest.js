@@ -1,13 +1,11 @@
 #! /usr/bin/env node
 
-const {spawn, execSync} = require('child_process')
+const {spawn} = require('child_process')
 const {createWriteStream} = require('fs')
 const {createInterface} = require('readline')
 
 const src = `/usr/share`
 
-const backupSize = parseInt(execSync(`du ${src} -s --apparent-size`, {encoding: 'utf8'})
-  .split(/\s+/))*1000
 
 console.log(`backup size: ${backupSize}`);
 
