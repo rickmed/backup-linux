@@ -1,3 +1,1 @@
-Backup Unix system using nodejs and rsync*
-
-*_Only tested on linux_
+cli app to backup Linux system using nodejs and rsync
