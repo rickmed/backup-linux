@@ -1,13 +1,11 @@
 #! /usr/bin/env node
 
+const {getDirSize} = require('./lib/getDirSize.js')
 const {spawn} = require('child_process')
 const {createWriteStream} = require('fs')
 const {createInterface} = require('readline')
 
 const src = `/usr/share`
-
-
-console.log(`backup size: ${backupSize}`);
 
 const rsync = spawn(`rsync -a -v --info=progress2 ${src} ~/Desktop/rsynctest`, {shell: true})
 const log = createWriteStream('rsnode.log')
