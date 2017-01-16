@@ -1,2 +1,3 @@
-# backup_app
-Backups linux system using nodejs and rsync 
+Backup Unix system using nodejs and rsync*
+
+*_Only tested on linux_
