@@ -7,9 +7,11 @@ const {createInterface} = require('readline')
 
 const src = `/usr/share`
 
+// shell: true is convenience but less safe and slower
 const rsync = spawn(`rsync -a -v --info=progress2 ${src} ~/Desktop/rsynctest`, {shell: true})
 const log = createWriteStream('rsnode.log')
 
+// parses stdout line by line to callback
 const rl = createInterface({input: rsync.stdout})
 
 
