@@ -8,7 +8,8 @@
     "jest-cli": "^18.1.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
