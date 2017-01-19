@@ -1,4 +1,4 @@
-const {optionPrompt, optsStr} = require('.')
+const {optionPrompt, optsStr} = require('./option-prompt')
 
 describe('optionPrompt', () => {
 

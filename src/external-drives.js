@@ -1,5 +1,5 @@
 const {execFile} = require('child_process')
-const {isRoot} = require('../is-root')
+const {isRoot} = require('./is-root')
 
 // the err, stdout, stderr and cb logic could be extracted is used elsewhere
 const execFileCB = cb => (err, stdout, stderr) => {

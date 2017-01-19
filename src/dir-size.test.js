@@ -1,4 +1,4 @@
-const {dirSizeImp} = require('.')
+const {dirSizeImp} = require('./dir-size')
 
 describe('dirSize', () => {
 

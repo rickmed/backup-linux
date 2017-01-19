@@ -1,4 +1,4 @@
-const {isRoot} = require('.')
+const {isRoot} = require('./is-root')
 
 describe('is-root', () => {
 

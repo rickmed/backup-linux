@@ -1,4 +1,4 @@
-const {externalDrivesImp, execFileCB} = require('.')
+const {externalDrivesImp, execFileCB} = require('./external-drives')
 
 describe('external-drives', () => {
 
