@@ -9,7 +9,7 @@ const handler = (rl, opts, cb) => ans => {
   rl.close()
 }
 
-// displays all options to user and returns the index of chosen str
+// displays all options + question to user and returns the index of chosen str
 // [str] -> int
 const optionPromptImp = (readline, process) => (opts, q, cb) => {
   const rl = readline.createInterface({
