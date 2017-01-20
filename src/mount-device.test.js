@@ -1,118 +1,45 @@
-const {
-  externalDrivesImp,
-  execFileCB
-} = require('./external-drives')
+const { mountDeviceImp, execHandlerImp } = require('./external-drives')
 
 describe('external-drives', () => {
 
-  describe('execFileCB', () => {
+  describe('execHandlerImp', () => {
 
-    it('should call the cb with correct list of external devices', () => {
-      const stdout = `{
-        "blockdevices": [{
-          "name": "sda",
-          "size": "232.9G",
-          "vendor": "ATA     ",
-          "model": "Samsung SSD 840 ",
-          "hotplug": "0",
-          "label": null,
-          "mountpoint": null,
-          "children": [{
-            "name": "sda10",
-            "size": "50.1G",
-            "vendor": null,
-            "model": null,
-            "hotplug": "0",
-            "label": null,
-            "mountpoint": null
-          }]
-        }, {
-          "name": "sdb",
-          "size": "3.8G",
-          "vendor": "Generic ",
-          "model": "Flash Disk      ",
-          "hotplug": "1",
-          "label": null,
-          "mountpoint": null,
-          "children": [{
-            "name": "sdb1",
-            "size": "3.8G",
-            "vendor": null,
-            "model": null,
-            "hotplug": "1",
-            "label": "LINUX MINT",
-            "mountpoint": null
-          }]
-        }, {
-          "name": "sdc",
-          "size": "465.8G",
-          "vendor": "ST500LM0",
-          "model": "00-SSHD-8GB     ",
-          "hotplug": "1",
-          "label": null,
-          "mountpoint": null,
-          "children": [{
-            "name": "sdc5",
-            "size": "5.9G",
-            "vendor": null,
-            "model": null,
-            "hotplug": "1",
-            "label": "WIN10_MEDIA",
-            "mountpoint": null
-          }]
-        }]
-      }`
+    const somePath = '/dsad/dasd'
+    const someErr = 'someErr'
 
+    it('should call the cb with correct data if no err or stderr', () => {
       const _cb = jest.fn()
-      execFileCB(_cb)(null, stdout, null)
-
-      const exp = [{
-        model: "Flash Disk      ",
-        name: "sdb",
-        partitions: [{
-          label: "LINUX MINT",
-          mountpoint: null,
-          name: "sdb1",
-          size: "3.8G"
-        }],
-        size: "3.8G",
-        vendor: "Generic "
-      }, {
-        model: "00-SSHD-8GB     ",
-        name: "sdc",
-        partitions: [{
-          label: "WIN10_MEDIA",
-          mountpoint: null,
-          name: "sdc5",
-          size: "5.9G"
-        }],
-        size: "465.8G",
-        vendor: "ST500LM0"
-      }]
-
-      expect(_cb).toBeCalledWith(null, exp)
-    });
-
-    it('should call the cb on err with stderr data', () => {
-      const _cb = jest.fn()
-      execFileCB(_cb)(null, null, 'test')
-      expect(_cb).toBeCalledWith('test')
+      execHandlerImp(somePath, _cb)(null, null, null)
+      expect(_cb).toBeCalledWith(null, somePath)
     });
 
     it('should call the cb with err on execFile err', () => {
       const _cb = jest.fn()
-      execFileCB(_cb)('test', null, null)
-      expect(_cb).toBeCalledWith('test')
+      execHandlerImp(somePath, _cb)(someErr, null, null)
+      expect(_cb).toBeCalledWith(someErr)
     });
 
   });
 
-  describe('externalDrives', () => {
+  describe('mountDevice', () => {
 
-    it('should call execFile with the correct args', () => {
+    let _cb, _execFile, _mkdir
+    beforeEach(() => {
+      _cb = jest.fn()
+      _execFile = jest.fn()
+      _mkdir = jest.fn()
+    })
+
+    it('should call execFile with the correct args on success', () => {
+
+
+
+      mountDeviceImp(_execFile, _mkdir)('sdb1')
+
+
+
       const _execFile = jest.fn()
       const _isRoot = jest.fn(() => true)
-      externalDrivesImp(_execFile, _isRoot)(() => '')
       const expFirs3Args = [
         'lsblk',
         [
@@ -124,7 +51,7 @@ describe('external-drives', () => {
           maxBuffer: 200 * 1024 * 1024
         }
       ]
-      const expLastArg = execFileCB(() => '').toString()
+      const expLastArg = execHandlerImp(() => '').toString()
       const actFirs3Args = _execFile.mock.calls[0].slice(0, 3)
       const actLastArg = _execFile.mock.calls[0][3].toString()
       expect(actFirs3Args).toEqual(expFirs3Args)
@@ -135,7 +62,7 @@ describe('external-drives', () => {
       const _cb = jest.fn()
       const _execFile = jest.fn()
       const _isRoot = jest.fn(() => false)
-      externalDrivesImp(_execFile, _isRoot)(_cb)
+      mountDeviceImp(_execFile, _isRoot)(_cb)
       expect(_cb.mock.calls[0][0]).toBeInstanceOf(Error)
     });
 
