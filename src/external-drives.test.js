@@ -67,27 +67,27 @@ describe('external-drives', () => {
       execFileCB(_cb)(null, stdout, null)
 
       const exp = [{
-        "model": "Flash Disk      ",
-        "name": "sdb",
-        "partitions": [{
-          "label": "LINUX MINT",
-          "mountpoint": null,
-          "name": "sdb1",
-          "size": "3.8G"
+        model: "Flash Disk      ",
+        name: "sdb",
+        partitions: [{
+          label: "LINUX MINT",
+          mountpoint: null,
+          name: "sdb1",
+          size: "3.8G"
         }],
-        "size": "3.8G",
-        "vendor": "Generic "
+        size: "3.8G",
+        vendor: "Generic "
       }, {
-        "model": "00-SSHD-8GB     ",
-        "name": "sdc",
-        "partitions": [{
-          "label": "WIN10_MEDIA",
-          "mountpoint": null,
-          "name": "sdc5",
-          "size": "5.9G"
+        model: "00-SSHD-8GB     ",
+        name: "sdc",
+        partitions: [{
+          label: "WIN10_MEDIA",
+          mountpoint: null,
+          name: "sdc5",
+          size: "5.9G"
         }],
-        "size": "465.8G",
-        "vendor": "ST500LM0"
+        size: "465.8G",
+        vendor: "ST500LM0"
       }]
 
       expect(_cb).toBeCalledWith(null, exp)

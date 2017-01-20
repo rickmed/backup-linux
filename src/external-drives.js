@@ -22,7 +22,19 @@ const execFileCB = cb => (err, stdout, stderr) => {
 }
 
 // cb(err, data) -> child_process
-// data: [{vendor: str, model:str, size:str, name: str}]
+/* data = {
+  model: str,
+  name: str,
+  partitions: [{
+    label: str,
+    mountpoint: null,
+    name: str,
+    size: str
+  }],
+  size: str,
+  vendor: str
+  }
+*/
 const externalDrivesImp = (execFile, isRoot) => cb => {
   if (!isRoot()) cb(new Error('You must run as root'))
   else return execFile(
