@@ -3,7 +3,7 @@ const {isRoot} = require('./is-root')
 describe('is-root', () => {
 
   process.__getuid = process.getuid
-  afterEach( () => process.getuid = process.__getuid)
+  afterAll( () => process.getuid = process.__getuid )
 
   it('should return error if not in POSIX', () => {
     process.getuid = undefined
