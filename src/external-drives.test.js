@@ -90,19 +90,19 @@ describe('external-drives', () => {
         vendor: "ST500LM0"
       }]
 
-      expect(_cb).toBeCalledWith(null, exp)
+      expect(_cb).toHaveBeenLastCalledWith(null, exp)
     });
 
     it('should call the cb on err with stderr data', () => {
       const _cb = jest.fn()
       execFileCB(_cb)(null, null, 'test')
-      expect(_cb).toBeCalledWith('test')
+      expect(_cb).toHaveBeenLastCalledWith('test')
     });
 
     it('should call the cb with err on execFile err', () => {
       const _cb = jest.fn()
       execFileCB(_cb)('test', null, null)
-      expect(_cb).toBeCalledWith('test')
+      expect(_cb).toHaveBeenLastCalledWith('test')
     });
 
   });

@@ -16,7 +16,7 @@ describe('option-prompt', () => {
 
     it('should call cb with correct params on valid answer', () => {
       handler(_rl, opts, _cb)('2 ')
-      expect(_cb).toBeCalledWith(null, 1)
+      expect(_cb).toHaveBeenLastCalledWith(null, 1)
     });
 
     it('should call cb with Err on invalid answer', () => {
@@ -26,14 +26,14 @@ describe('option-prompt', () => {
 
     it('should close the readline interface', () => {
       handler(_rl, opts, _cb)('whatever')
-      expect(_rl.close).toBeCalled()
+      expect(_rl.close).toHaveBeenCalledTimes(1)
     });
 
   });
 
   describe('optionPromptImp', () => {
 
-    it('should call rl.question with the correct params', () => {
+    it('should call rl.question with the correct params', (done) => {
       const exp = `question
 1) option 1
 2) option 2
@@ -44,6 +44,7 @@ describe('option-prompt', () => {
             expect(q).toBe(exp)
             expect(cb).toBeInstanceOf(Function)
             expect(cb.length).toBe(1)
+            done()
           })
         }))
       }

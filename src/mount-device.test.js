@@ -20,7 +20,7 @@ describe('external-drives', () => {
 
     it('should call the cb with correct data if no err or stderr', () => {
       execHandlerImp(_rmdir)(SOME_PATH, _cb)(null, null, null)
-      expect(_cb).toBeCalledWith(null, SOME_PATH)
+      expect(_cb).toHaveBeenLastCalledWith(null, SOME_PATH)
       expect(_rmdir).not.toBeCalled()
     });
   });
