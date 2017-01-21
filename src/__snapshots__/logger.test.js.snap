@@ -1,0 +1,1 @@
+exports[`fitInTTY truncates str to 9 chars 1`] = `"I wont..."`;
