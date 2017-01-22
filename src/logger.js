@@ -1,7 +1,11 @@
 const __fitInTTY = stdout =>
-  ln =>
-    ln.length < stdout.columns ? ln :
-      `${ln.slice(0, stdout.columns - 4)}...`
+  ln => {
+    if ( typeof ln === 'string') {
+      if (ln.length < stdout.columns) return ln
+      else return `${ln.slice(0, stdout.columns - 4)}...`
+    }
+    else return ln
+  }
 
 const fitInTTY = __fitInTTY(process.stdout)
 

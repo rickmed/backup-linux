@@ -2,12 +2,18 @@ const { __fitInTTY, __logger } = require('./logger')
 
 describe('fitInTTY', () => {
 
+  const _stdout = {
+    columns: 10
+  }
+
   it('truncates str to 9 chars', () => {
-    const _stdout = {
-      columns: 10
-    }
     expect(__fitInTTY(_stdout)("I wont fit in tty")).toMatchSnapshot()
   });
+
+  it('should return its input if it is not a string', () => {
+    expect(__fitInTTY(_stdout)(null)).toMatchSnapshot()
+  });
+
 
 });
 

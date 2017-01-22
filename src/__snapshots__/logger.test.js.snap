@@ -1,1 +1,3 @@
+exports[`fitInTTY should return its input if it is not a string 1`] = `null`;
+
 exports[`fitInTTY truncates str to 9 chars 1`] = `"I wont..."`;
