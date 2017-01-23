@@ -6,22 +6,16 @@ const excludeDirsDef = ["/dev/*", "/proc/*", "/sys/*", "/tmp/*",
   "/home/*/.cache", "/home/*/.local/share/Trash","/home/*/.thumbnails/*"]
 
 const excludeDirs = (patterns) =>
-  patterns.map( x => `--exclude=${x}`)
+  patterns.map(x => `--exclude=${x}`)
 
-// str -> [str] -> cb(err) -> child_process
-// child_process error and rsync stderr are sent to cb
+// (str, str, [str]) -> child_process
 const __rsync = spawn =>
-  (backupDir, destDir, excludePatterns = excludeDirsDef, cb) => {
-    const rsync = spawn('rsync',
-      [
-        ...excludeDirs(excludePatterns),
-        `--info=progress2`, `-v`, `--delete`, `-aAXHt`,
-        `${backupDir}`, `${destDir}`
+  (backupDir, destDir, excludePatterns = excludeDirsDef) =>
+    spawn('rsync', [
+      ...excludeDirs(excludePatterns),
+      `--info=progress2`, `-v`, `--delete`, `-aAXHt`,
+      `${backupDir}`, `${destDir}`
     ])
-    rsync.on('error', x => cb(x) )
-    rsync.stderr.on('data', x => cb(x) )
-    return rsync
-}
 
 const rsync = __rsync(spawn)
 
