@@ -1,0 +1,48 @@
+exports[`test calls spawn with the correct params 1`] = `
+Array [
+  Array [
+    "rsync",
+    Array [
+      "--exclude=/proc/*",
+      "--exclude=/sys/*",
+      "--info=progress2",
+      "-v",
+      "--delete",
+      "-aAXHt",
+      "/some/path",
+      "/some/path",
+    ],
+  ],
+]
+`;
+
+exports[`test calls spawn with the correct params of no patterns are passed 1`] = `
+Array [
+  Array [
+    "rsync",
+    Array [
+      "--exclude=/dev/*",
+      "--exclude=/proc/*",
+      "--exclude=/sys/*",
+      "--exclude=/tmp/*",
+      "--exclude=/run/*",
+      "--exclude=/mnt/*",
+      "--exclude=/media/*",
+      "--exclude=/var/run/*",
+      "--exclude=/var/lock/*",
+      "--exclude=/var/cache/apt/archives/*",
+      "--exclude=/lost+found",
+      "--exclude=/home/*/.gvfs",
+      "--exclude=/home/*/.cache",
+      "--exclude=/home/*/.local/share/Trash",
+      "--exclude=/home/*/.thumbnails/*",
+      "--info=progress2",
+      "-v",
+      "--delete",
+      "-aAXHt",
+      "/some/path",
+      "/some/path",
+    ],
+  ],
+]
+`;
