@@ -1,3 +1,29 @@
 exports[`fitInTTY should return its input if it is not a string 1`] = `null`;
 
 exports[`fitInTTY truncates str to 9 chars 1`] = `"I wont..."`;
+
+exports[`logger log should call moveCursor 3 times with correct params 1`] = `
+Array [
+  Array [
+    Object {
+      "write": [Function],
+    },
+    0,
+    1,
+  ],
+  Array [
+    Object {
+      "write": [Function],
+    },
+    0,
+    -1,
+  ],
+  Array [
+    Object {
+      "write": [Function],
+    },
+    0,
+    1,
+  ],
+]
+`;
