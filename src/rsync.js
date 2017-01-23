@@ -1,5 +1,4 @@
 const {spawn} = require('child_process')
-const {createInterface} = require('readline')
 
 const excludeDirsDef = ["/dev/*", "/proc/*", "/sys/*", "/tmp/*",
   "/run/*", "/mnt/*", "/media/*", "/var/run/*", "/var/lock/*",
@@ -10,7 +9,8 @@ const excludeDirs = (patterns) =>
   patterns.map( x => `--exclude=${x}`)
 
 // str -> [str] -> cb(err) -> child_process
-const __rsync = (spawn, createInterface) =>
+// child_process error and rsync stderr are sent to cb
+const __rsync = spawn =>
   (backupDir, destDir, excludePatterns = excludeDirsDef, cb) => {
     const rsync = spawn('rsync',
       [
@@ -20,11 +20,9 @@ const __rsync = (spawn, createInterface) =>
     ])
     rsync.on('error', x => cb(x) )
     rsync.stderr.on('data', x => cb(x) )
-    const rl = createInterface({input: rsync.stdout})
-    rl.on('line', x => cb(null, x) )
     return rsync
 }
 
-const rsync = __rsync(spawn, createInterface)
+const rsync = __rsync(spawn)
 
 module.exports = {rsync, __rsync}
