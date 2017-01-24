@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "description": "backup linux system using rsync",
   "main": "main.js",
-  "dependencies": {},
+  "bin": {
+    "backup-linux": "bin/index.js"
+  },
+  "dependencies": {
+    "yargs": "^6.6.0"
+  },
   "devDependencies": {
     "jest-cli": "^18.1.0"
   },
