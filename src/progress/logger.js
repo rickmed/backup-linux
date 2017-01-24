@@ -19,26 +19,24 @@ log([null, 'some str']) */ // first line will not be changed
 const __logger = (rl, stderr, fitInTTY) =>
 // since fitInTTY is unpure, is a dependency injected in __logger to mock
   lines => {
-
-    const cursorDown = dy => rl.moveCursor(stderr, 0, dy)
-
-    cursorDown(lines - 1)
+    // moves down
+    rl.moveCursor(stderr, 0, lines - 1)
 
     const log = xs => {
-      // move up
-      cursorDown((-xs.length) + 1)
+      // moves up
+      rl.moveCursor(stderr, 0, (-xs.length) + 1)
       xs
       .map(fitInTTY)
       .forEach( (x, i, arr) => {
         const isLast = (i === arr.length - 1) ? true : false
         if ( x === null ) {
-          if (!isLast) cursorDown(1)
+          if (!isLast) rl.moveCursor(stderr, 0, 1)
         }
         else {
           rl.cursorTo(stderr, 0)
           stderr.write(x)
           rl.clearLine(stderr, 1)
-          if (!isLast) cursorDown(1)
+          if (!isLast) rl.moveCursor(stderr, 0, 1)
         }
       })
     }
