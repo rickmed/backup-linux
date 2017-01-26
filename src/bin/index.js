@@ -2,8 +2,7 @@
 
 const yargs = require('yargs')
 
-const {argv} = yargs(process.argv)
-.options({
+const opts = {
   'e': {
     alias: 'eta',
     type: 'boolean',
@@ -34,17 +33,60 @@ const {argv} = yargs(process.argv)
     default: false,
     describe: 'adds transmission rate to the progress line'
   },
+  't': {
+    alias: 'elapsed',
+    type: 'boolean',
+    default: false,
+    describe: 'adds total time passed to the progress line'
+  },
   'no-file': {
     type: 'boolean',
     default: true,
-    describe: 'prints the current file being sent in the line below'
+    describe: 'prevents printing in the line below the current file being sent'
   },
-  'order': {
+  'o': {
+    alias: 'order',
     type: 'string',
-    default: false,
-    describe: 'pass a string with the order of the options you would like to be printed. Eg:\norder="b p e" (will print in order the progress bar, percentage and eta with one space in between. If this option is not set, the order of the rendering options will be the default: bar percentage rate eta data-sent)'
+    describe: 'pass a string with the order of the options you would like to be printed. Eg:\norder "b p eta" (will print in order the progress bar, percentage and eta). If this option is not set, the order of the rendering options will be the default: data-sent bar percentage rate eta elapsed)'
   }
-})
+}
+
+const {argv} = yargs(process.argv)
+.options(opts)
 .help()
 
-console.log(argv)
+// -> str -> str
+const optOfAlias = alias => {
+  const optKeys = Object.keys(opts)
+  const findAlias = i =>
+    alias === opts[optKeys[i]].alias ? optKeys[i] : findAlias(++i)
+  return findAlias(0)
+}
+
+// obj -> [str]
+const argvToFormatStr = argv => {
+  if (argv.order) {
+    return argv.order
+      .trim()
+      .replace('--', '')
+      .split(/\s+/)
+      .map(x => x.length > 1 ? optOfAlias(x) : x)
+
+  }
+  else {
+    return Object.keys(argv)
+      .filter(x => x.length === 1)  // out aliases
+      .filter(x => x !== 'no-file')
+      .filter(x => argv[x])  // in the ones with truthy values
+      .filter(x => x !== '_')  // out yargs' "_"
+  }
+}
+
+module.exports = {optOfAlias, argvToFormatStr}
+// const {progress} = require('../progress')
+
+// progress(argv, '73,686,941  20.40MB/s  0:00:03', '321321')
+
+
+
+// 102,3MB [🎄🎄🎄🎄▶    ] 50% 34.4MB/s 1h20m34s 00:00:00
