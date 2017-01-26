@@ -1,68 +1,57 @@
-const {
-  optOfAlias,
-  argvToFormatStr
-} = require('.')
+const {opts, optAlias, argvToFormatStr} = require('.')
 
+const _opts = opts
+_opts.w = {}
 
-describe('optOfAlias', () => {
+describe('optAlias', () => {
 
-  it('return opt of an alias', () => {
-    expect(optOfAlias('elapsed')).toBe('t')
+  it('returns alias of opt', () => {
+    expect(optAlias(_opts)(':a')).toBe(':eta')
+  });
+
+  it('returns error NOOPT when opt does not exist', () => {
+    expect(optAlias(_opts)(':j').message).toBe('ENOOPT')
+  });
+
+  it('returns error ENOALIAS when opt has no alias', () => {
+    expect(optAlias(_opts)(':w').message).toBe('ENOALIAS')
   });
 
 });
 
 describe('argvToFormatStr', () => {
 
-  it('returns correct str when order is present', () => {
+  it('returns correct str when format is present', () => {
     const _argv = {
-      _: [],
-      e: true,
-      eta: true,
-      d: false,
-      data: false,
-      b: false,
-      bar: false,
-      p: false,
-      zee: false,
-      r: true,
-      rate: true,
-      t: false,
-      elapsed: false,
-      'no-file': true,
-      noFile: true,
-      help: false,
-      order: '  t --percentage   data  ',
-      o: 't p data',
-      '$0': 'src/bin/index.js'
+      format: ' :b :percentage  :eta '
     }
-
-    expect(argvToFormatStr(_argv)).toEqual(['t', 'p', 'd'])
+    const exp = ' :bar :percentage  :eta '
+    expect(argvToFormatStr(_opts)(_argv)).toBe(exp)
   });
 
-  it('returns correct str when order is not', () => {
+  it('returns correct str when format is not present', () => {
     const _argv = {
       _: [],
-      e: true,
+      a: true,
       eta: true,
-      d: false,
-      data: false,
-      b: false,
-      bar: false,
+      t: true,
+      total: true,
+      b: true,
+      bar: true,
       p: false,
-      zee: false,
+      percentage: false,
       r: true,
       rate: true,
-      t: false,
-      elapsed: false,
-      'no-file': true,
-      noFile: true,
+      e: true,
+      elapsed: true,
+      file: false,
       help: false,
-      o: undefined,
+      f: undefined,
       '$0': 'src/bin/index.js'
     }
 
-    expect(argvToFormatStr(_argv)).toEqual(['e', 'r'])
+    const exp = ':total :bar :rate :eta :elapsed'
+    expect(argvToFormatStr(_opts)(_argv)).toBe(exp)
   });
 
 });
