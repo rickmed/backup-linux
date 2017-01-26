@@ -1,6 +1,5 @@
 // TODO: change math.power to ** using babel
 
-
 // str -> int -> int
 const convertBytes = (units, magnitude) => {
   // check if conversion is bytes -> k|M|G or inverse
@@ -48,7 +47,7 @@ const eta = (rate, deltaBytes) => {
 // int -> int -> int -> str
 const bar = (completedRatio, width) => {
   const renderCompleted = Math.floor(completedRatio * width)
-  return '🎄 '.repeat(renderCompleted) + '  '.repeat(width - renderCompleted)
+  return '█'.repeat(renderCompleted) + '░'.repeat(width - renderCompleted)
 }
 
 // int -> str
@@ -65,25 +64,30 @@ const percentage = ratio =>
 
 /**
 * @function progressInfo Curried
-* @param  {string[]} opts Single Character opts in order to be returned
+* @param  {string[]} opts Tokens (EG: ":bar :eta")
 * @param  {number} dirSize
 * @param  {string} rsyncProgress
 * @param  {number} width Max bytes to use
-* @return {string[]} Data mapped to the options passed in
+* @return {string[]} Opts populated with data
 */
 const progressInfo = opts => dirSize => rsyncProgress => width => {
   let [bytesSent, , rate, elapsed] = rsyncProgress.split(/\s+/)
   const bytesSentInt = parseInt(bytesSent.replace(/,/g, ''))
-  const completedRatio = dirSize / bytesSentInt
+  const completedRatio = bytesSentInt / dirSize
   const deltaBytes = dirSize - bytesSentInt
-  return opts
-  // .map(x =>
-  //   x === 'e' ? eta(rate, deltaBytes) :
-  //   x === 'd' ? bytesToHuman(bytesSentInt) :
-  //   x === 'b' ? eta(rate, deltaBytes) :
-  //   x === 'e' ? eta(rate, deltaBytes) :
-  // )
 
+  const populatedMinusBar = opts
+    .replace(':eta', eta(rate, deltaBytes))
+    .replace(':total', bytesToHuman(bytesSentInt))
+    .replace(':percentage', percentage(completedRatio))
+    .replace(':rate', rate)
+    .replace(':elapsed', elapsed)
+
+  if ( !populatedMinusBar.includes(':bar') ) return populatedMinusBar
+  else {
+    const availWidth = width - populatedMinusBar.length + ':bar'.length
+    return populatedMinusBar.replace(':bar', bar(completedRatio, availWidth))
+  }
 }
 
 module.exports = {convertBytes, secondsToHuman, eta, splitSizeFromUnits, bar, bytesToHuman, progressInfo}

@@ -4,7 +4,8 @@ const {
   splitSizeFromUnits,
   eta,
   bar,
-  bytesToHuman
+  bytesToHuman,
+  progressInfo
 } = require('./progress-info')
 
 describe('convertBytes', () => {
@@ -85,20 +86,20 @@ describe('eta', () => {
 describe('bar', () => {
 
   it('returns string correctly', () => {
-    expect(bar(0.48, 10)).toBe('🎄 🎄 🎄 🎄             ')
+    expect(bar(0.49, 20)).toBe('█████████░░░░░░░░░░░')
   });
 
 });
 
 describe('bytesToHuman', () => {
 
-  const units = ['kB', 'MB', 'GB', 'TB']
-  const bytes = 1234
+  const units = ['b', 'kB', 'MB', 'GB', 'TB']
+  const size = 1234
   const sample = [
-    bytes,
-    bytes * 1000,
-    bytes * 1000000,
-    bytes * 1000000000
+    size,
+    size * 1000,
+    size * 1000000,
+    size * 1000000000
   ]
 
   units.forEach( (x, i) => {
@@ -110,3 +111,28 @@ describe('bytesToHuman', () => {
   })
 
 });
+
+describe('progressInfo', () => {
+
+  it('returns correct string if bar is in opts', () => {
+    const _opts = ':total :bar :rate SOMETR  :percentage :eta :elapsed'
+    const _dirSize = 1 * Math.pow(10, 9)  //1GB
+    const _rsyncProgress = '544,217,337  97%   1.0MB/s    0:00:02 (xfr#18319, ir-chk=1431/38371)'
+    const _width = 50
+
+    const act = progressInfo(_opts)(_dirSize)(_rsyncProgress)(_width)
+    expect(act.length).toBe(_width)
+    expect(act).toMatchSnapshot()
+  });
+
+  it('returns correct string if bar is NOT in opts', () => {
+    const _opts = ':total :rate SOMETR  :percentage :eta :elapsed'
+    const _dirSize = 1 * Math.pow(10, 9)  //1GB
+    const _rsyncProgress = '544,217,337  97%   1.0MB/s    0:00:02 (xfr#18319, ir-chk=1431/38371)'
+    const _width = 50
+
+    const act = progressInfo(_opts)(_dirSize)(_rsyncProgress)(_width)
+    expect(act).toMatchSnapshot()
+  });
+
+})
