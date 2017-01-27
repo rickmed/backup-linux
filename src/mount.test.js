@@ -1,14 +1,14 @@
-const {__mount, __execCB} = require('.')
-
-let _cb
-beforeEach( () => _cb = jest.fn() )
+const {__mount, __execCB, __umount} = require('./mount')
 
 describe('execCB', () => {
 
   const SOME_PATH = '/dsad/dasd'
   const SOME_ERR = new Error
-  let _rmdir
-  beforeEach( () => _rmdir = jest.fn() )
+  let _rmdir, _cb
+  beforeEach( () => {
+    _rmdir = jest.fn()
+    _cb = jest.fn()
+  })
 
   it('should call rmdir and the cb with correct params on execFile err', () => {
     _rmdir = jest.fn( (str, cb) => cb(SOME_ERR) )
@@ -26,8 +26,11 @@ describe('execCB', () => {
 describe('mount', () => {
 
   const DEV_NAME = `sdc2`
-  let _execFile
-  beforeEach( () => _execFile = jest.fn() )
+  let _execFile, _cb
+  beforeEach( () => {
+    _execFile = jest.fn()
+    _cb = jest.fn()
+  })
 
   it('should call cb with correct err msg on mkdir fail', () => {
     const _mkdir = jest.fn( (str, cb) => cb({code: 'EEXIST'}) )
@@ -55,6 +58,61 @@ describe('mount', () => {
     expect(firstCall[1][0]).toBe(`/dev/${DEV_NAME}`)
     expect(firstCall[1][1]).toMatch(new RegExp(`/tmp/${DEV_NAME}-\\d`))
     expect(firstCall[2].length).toBe(3)
+  });
+
+});
+
+
+describe('umount', () => {
+  const PART_NAME = 'sdc1'
+  const MOUNT_PATH = '/some/path'
+
+  let _execFile, _cb, _rmdir
+  beforeEach( () => {
+    _execFile = jest.fn()
+    _cb = jest.fn()
+    _rmdir = jest.fn()
+
+  })
+
+  it('calls execFile with the correct params', () => {
+    __umount(_execFile, _rmdir)(PART_NAME)(MOUNT_PATH)(_cb)
+    expect(_execFile.mock.calls).toMatchSnapshot()
+  });
+
+  it('execFile calls cb correctly on err', () => {
+    _execFile = jest.fn( (a, b, cb) => {
+      cb('some err', null, null)
+    })
+    __umount(_execFile, _rmdir)(PART_NAME)(MOUNT_PATH)(_cb)
+    expect(_cb.mock.calls).toMatchSnapshot()
+  });
+
+  it('execFile calls cb correctly on stderr', () => {
+    _execFile = jest.fn( (a, b, cb) => {
+      cb(null, null, 'some err')
+    })
+    __umount(_execFile, _rmdir)(PART_NAME)(MOUNT_PATH)(_cb)
+    expect(_cb.mock.calls).toMatchSnapshot()
+  });
+
+  it('execFile calls rmdir correctly on success', () => {
+    _execFile = jest.fn( (a, b, cb) => {
+      cb(null, null, null)
+    })
+    __umount(_execFile, _rmdir)(PART_NAME)(MOUNT_PATH)(_cb)
+    expect(_rmdir.mock.calls).toMatchSnapshot()
+  });
+
+  it('rmdir calls correctly on fail', () => {
+    _execFile = jest.fn( (a, b, cb) => {
+      cb(null, null, null)
+    })
+    _rmdir = jest.fn( (a, cb) => {
+      cb('test')
+    })
+    __umount(_execFile, _rmdir)(PART_NAME)(MOUNT_PATH)(_cb)
+    expect(_cb).toBeCalledWith('test')
   });
 
 });

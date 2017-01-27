@@ -14,8 +14,6 @@ const __execCB = rmdir => (mountPath, cb) => (err, stdout, stderr) => {
 const execCB = __execCB(rmdir)
 
 
-// str -> (err, data) -> ()
-// data is the mounted path
 const __mount = (execFile, mkdir) => (devName, cb) => {
   const reTryIfDirExist = num => {
     const mountPath = `/tmp/${devName}-${num}`
@@ -38,6 +36,36 @@ const __mount = (execFile, mkdir) => (devName, cb) => {
   reTryIfDirExist(1)
 }
 
+/**
+* @function umount
+* @param  {String} devName
+* @param  {Function} cb  (err, data) data is the mountedPath
+*/
 const mount = __mount(execFile, mkdir)
 
-module.exports = {__execCB, mount, __mount}
+
+
+const __umount = (execFile, rmdir) =>
+  partName => mountedPath => cb => {
+    execFile( `umount`, [`/dev/${partName}`],
+      (err, stdout, stderr) => {
+        const cbErr = err || stderr
+        if (cbErr) cb(cbErr)
+        else {
+        // auto double check bc if dev still mounted, rmdir will fail
+          rmdir(mountedPath, err => cb(err))
+        }
+      }
+    )
+  }
+
+/**
+* @function umount
+* @param  {string} partName {Partition name. Eg: "sdb1"}
+* @param  {string} mountedPath {}
+* @param  {function} cb    {only err param}
+* @return {unit} {Unit}
+*/
+const umount = __umount(execFile, rmdir)
+
+module.exports = {__execCB, mount, __mount, umount, __umount}
