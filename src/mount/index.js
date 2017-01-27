@@ -1,29 +1,27 @@
 const {execFile} = require('child_process')
 const {mkdir, rmdir} = require('fs')
 
-
-// the err, stdout, stderr and cb logic could be extracted is used elsewhere
-const execHandlerImp = rmdir => (mountPath, cb) => (err, stdout, stderr) => {
+const __execCB = rmdir => (mountPath, cb) => (err, stdout, stderr) => {
   if (err) {
     rmdir(mountPath, err => {
-      err.mountDevice = 'Remove mountPath failed on cleanup'
+      err.mount = 'Remove mountPath failed on cleanup'
       cb(err)
     })
   }
   else cb(null, mountPath)
 }
 
-const execHandler = execHandlerImp(rmdir)
+const execCB = __execCB(rmdir)
 
 
 // str -> (err, data) -> ()
 // data is the mounted path
-const mountDeviceImp = (execFile, mkdir) => (devName, cb) => {
+const __mount = (execFile, mkdir) => (devName, cb) => {
   const reTryIfDirExist = num => {
     const mountPath = `/tmp/${devName}-${num}`
     mkdir(mountPath, err => {
       if (num === 5) {
-        err.mountDevice = `Failed after trying to create mounting dirs with ${num} different names`
+        err.mount = `Failed after trying to create mounting dirs with ${num} different names`
         cb(err)
       }
       else if (err && err.code === 'EEXIST') {
@@ -33,13 +31,13 @@ const mountDeviceImp = (execFile, mkdir) => (devName, cb) => {
       else execFile(
         `mount`,
         [`/dev/${devName}`, mountPath],
-        execHandler(mountPath, cb)
+        execCB(mountPath, cb)
       )
     })
   }
   reTryIfDirExist(1)
 }
 
-const mountDevice = mountDeviceImp(execFile, mkdir)
+const mount = __mount(execFile, mkdir)
 
-module.exports = {execHandlerImp, mountDevice, mountDeviceImp}
+module.exports = {__execCB, mount, __mount}
