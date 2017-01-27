@@ -1,4 +1,4 @@
-const {__mount, __execCB} = require('./mount-device')
+const {__mount, __execCB} = require('.')
 
 let _cb
 beforeEach( () => _cb = jest.fn() )
@@ -13,7 +13,7 @@ describe('execCB', () => {
   it('should call rmdir and the cb with correct params on execFile err', () => {
     _rmdir = jest.fn( (str, cb) => cb(SOME_ERR) )
     __execCB(_rmdir)(SOME_PATH, _cb)(SOME_ERR, null, null)
-    expect(_cb.mock.calls[0][0].mountDevice).toBeDefined()
+    expect(_cb.mock.calls[0][0].mount).toBeDefined()
   });
 
   it('should call the cb with correct data if no err or stderr', () => {
@@ -32,7 +32,7 @@ describe('mount', () => {
   it('should call cb with correct err msg on mkdir fail', () => {
     const _mkdir = jest.fn( (str, cb) => cb({code: 'EEXIST'}) )
     __mount(_execFile, _mkdir)(DEV_NAME, _cb)
-    expect(_cb.mock.calls[0][0].mountDevice).toBeDefined()
+    expect(_cb.mock.calls[0][0].mount).toBeDefined()
   });
 
   it('should retry mkdir on mkdir fail', () => {
