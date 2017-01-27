@@ -55,8 +55,7 @@ const bytesToHuman = b =>
   b >= Math.pow(10, 12) ? `${convertBytes('t', b).toFixed(1)}TB` :
   b >= Math.pow(10, 9) ? `${convertBytes('g', b).toFixed(1)}GB` :
   b >= Math.pow(10, 6) ? `${convertBytes('m', b).toFixed(1)}MB` :
-  b >= Math.pow(10, 3) ? `${convertBytes('k', b).toFixed(1)}kB` :
-  b
+  `${convertBytes('k', b).toFixed(1)}kB`
 
 // float -> str
 const percentage = ratio =>

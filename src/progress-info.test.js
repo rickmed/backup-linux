@@ -93,7 +93,7 @@ describe('bar', () => {
 
 describe('bytesToHuman', () => {
 
-  const units = ['b', 'kB', 'MB', 'GB', 'TB']
+  const units = ['kB', 'MB', 'GB', 'TB']
   const size = 1234
   const sample = [
     size,
@@ -107,7 +107,6 @@ describe('bytesToHuman', () => {
     it(`formats correctly to ${unit}`, () => {
       expect(bytesToHuman(sample[i])).toEqual(`1.2${unit}`)
     });
-
   })
 
 });
