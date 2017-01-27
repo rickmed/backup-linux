@@ -124,12 +124,4 @@ describe('externalDrives', () => {
     expect(actLastArg).toBe(expLastArg)
   });
 
-  it('should call cb with err if process was not ran as root', () => {
-    const _cb = jest.fn()
-    const _execFile = jest.fn()
-    const _isRoot = jest.fn(() => false)
-    externalDrivesImp(_execFile)(_cb)
-    expect(_cb.mock.calls[0][0]).toBeInstanceOf(Error)
-  });
-
 });
