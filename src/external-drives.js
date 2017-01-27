@@ -40,7 +40,6 @@ const externalDrivesImp = (execFile, isRoot) => cb => {
   else return execFile(
     `lsblk`,
     [
-      '--nodeps',
       '--output=NAME,SIZE,VENDOR,MODEL,HOTPLUG,LABEL,MOUNTPOINT',
       '--json'
     ],

@@ -114,7 +114,6 @@ describe('externalDrives', () => {
     const expFirs3Args = [
       'lsblk',
       [
-        '--nodeps',
         '--output=NAME,SIZE,VENDOR,MODEL,HOTPLUG,LABEL,MOUNTPOINT',
         '--json'
       ],
