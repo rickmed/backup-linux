@@ -67,7 +67,7 @@ const percentage = ratio =>
 * @param  {number} dirSize
 * @param  {string} rsyncProgress
 * @param  {number} width Max bytes to use
-* @return {string[]} Opts populated with data
+* @return {string} Opts populated with data
 */
 const progressInfo = opts => dirSize => rsyncProgress => width => {
   let [bytesSent, , rate, elapsed] = rsyncProgress.split(/\s+/)
