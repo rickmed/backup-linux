@@ -10,6 +10,14 @@ const excludeDirs = (patterns) =>
 
 // (str, str, [str]) -> child_process
 const __rsync = spawn =>
+
+  /**
+  * @function rsync
+  * @param  {String} backupDir
+  * @param  {String} destDir
+  * @param  {String[]=} excludePatterns = excludeDirsDef
+  * @returns {Object} child_process
+  */
   (backupDir, destDir, excludePatterns = excludeDirsDef) =>
     spawn('rsync', [
       ...excludeDirs(excludePatterns),
