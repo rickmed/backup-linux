@@ -63,19 +63,19 @@ const percentage = ratio =>
 
 /**
 * @function progressInfo Curried
-* @param  {string[]} opts Tokens (EG: ":bar :eta")
+* @param  {string[]} format Tokens (EG: ":bar :eta")
 * @param  {number} dirSize
 * @param  {string} rsyncProgress
 * @param  {number} width Max bytes to use
-* @return {string} Opts populated with data
+* @return {string} format populated with data
 */
-const progressInfo = opts => dirSize => rsyncProgress => width => {
+const progressInfo = format => dirSize => rsyncProgress => width => {
   let [bytesSent, , rate, elapsed] = rsyncProgress.split(/\s+/)
   const bytesSentInt = parseInt(bytesSent.replace(/,/g, ''))
   const completedRatio = bytesSentInt / dirSize
   const deltaBytes = dirSize - bytesSentInt
 
-  const populatedMinusBar = opts
+  const populatedMinusBar = format
     .replace(':eta', eta(rate, deltaBytes))
     .replace(':total', bytesToHuman(bytesSentInt))
     .replace(':percentage', percentage(completedRatio))
