@@ -34,4 +34,34 @@ const argvToFormatStr = opts => argv => {
   }
 }
 
-module.exports = {optAlias, argvToFormatStr}
+
+/**
+ * @function formatDevInfo
+ * @param  {Array<Object>} devInfo
+ * @return {Array<String>}
+ */
+const formatDevInfo = devInfo =>
+  devInfo.reduce((acc, cur) => {
+    const partitions = cur.partitions.map(x => {
+      const lab = x.label || 'No_label'
+      return `${x.name} ${lab} ${x.size} in ${cur.vendor} ${cur.model}`
+    })
+    return [...acc, ...partitions]
+  }, [])
+
+
+/**
+ * @function devName
+ * @param  {String} str device info
+ * @return {String} device full path
+ */
+const devName = str =>
+  str.match(/sd[a-z]{1}\d{1,}/)[0]
+
+
+module.exports = {
+  optAlias,
+  argvToFormatStr,
+  formatDevInfo,
+  devName
+}
