@@ -7,11 +7,11 @@ const optAlias = opts => opt => {
 }
 
 /**
-* @function argvToFormatStr
-* @param  {object} opts - Options passed to yargs
-* @param  {object} argv - Output of yargs
-* @return {string} With tokens to be populated. Eg ":bar :eta"
-*/
+ * @function argvToFormatStr
+ * @param  {object} opts - Options passed to yargs
+ * @param  {object} argv - Output of yargs
+ * @return {string} With tokens to be populated. Eg ":bar :eta"
+ */
 const argvToFormatStr = opts => argv => {
   if (argv.format) {
     return argv.format
@@ -20,10 +20,10 @@ const argvToFormatStr = opts => argv => {
   }
   else {
     const optsStr = Object.keys(argv)
-      .filter(x => x.length === 1)  // in only options aliases
+      .filter(x => x.length === 1) // in only options aliases
       .filter(x => x !== 'no-file')
-      .filter(x => argv[x])  // in the ones with truthy values
-      .filter(x => x !== '_')  // out yargs' "_"
+      .filter(x => argv[x]) // in the ones with truthy values
+      .filter(x => x !== '_') // out yargs' "_"
       .join(' ')
 
     const defaultOrder = 't b p r a e'
