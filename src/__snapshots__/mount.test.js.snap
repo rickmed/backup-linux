@@ -1,0 +1,36 @@
+exports[`umount calls execFile with the correct params 1`] = `
+Array [
+  Array [
+    "umount",
+    Array [
+      "/dev/sdc1",
+    ],
+    [Function],
+  ],
+]
+`;
+
+exports[`umount execFile calls cb correctly on err 1`] = `
+Array [
+  Array [
+    "some err",
+  ],
+]
+`;
+
+exports[`umount execFile calls cb correctly on stderr 1`] = `
+Array [
+  Array [
+    "some err",
+  ],
+]
+`;
+
+exports[`umount execFile calls rmdir correctly on success 1`] = `
+Array [
+  Array [
+    "/some/path",
+    [Function],
+  ],
+]
+`;

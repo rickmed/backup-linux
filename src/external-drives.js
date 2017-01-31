@@ -1,5 +1,4 @@
 const {execFile} = require('child_process')
-const {isRoot} = require('./is-root')
 
 // the err, stdout, stderr and cb logic could be extracted is used elsewhere
 const execFileCB = cb => (err, stdout, stderr) => {
@@ -17,7 +16,8 @@ const execFileCB = cb => (err, stdout, stderr) => {
         const {vendor, model, size, name} = x
         return { vendor, model, size, name, partitions }
       })
-    cb(null, devInfo)
+    if (devInfo.length === 0 ) cb(new Error('Could not find any external devices'))
+    else cb(null, devInfo)
   }
 }
 
@@ -35,20 +35,19 @@ const execFileCB = cb => (err, stdout, stderr) => {
   vendor: str
   }
 */
-const externalDrivesImp = (execFile, isRoot) => cb => {
-  if (!isRoot()) cb(new Error('You must run as root'))
-  else return execFile(
-    `lsblk`,
-    [
-      '--nodeps',
-      '--output=NAME,SIZE,VENDOR,MODEL,HOTPLUG,LABEL,MOUNTPOINT',
-      '--json'
-    ],
-    {maxBuffer: 200*1024*1024},
-    execFileCB(cb)
-  )
-}
+const externalDrivesImp = execFile =>
+  cb =>
+    execFile(
+      `lsblk`,
+      [
+        '--output=NAME,SIZE,VENDOR,MODEL,HOTPLUG,LABEL,MOUNTPOINT',
+        '--json'
+      ],
+      {maxBuffer: 200*1024*1024},
+      execFileCB(cb)
+    )
 
-const externalDrives = externalDrivesImp(execFile, isRoot)
+
+const externalDrives = externalDrivesImp(execFile)
 
 module.exports = {execFileCB, externalDrives, externalDrivesImp}

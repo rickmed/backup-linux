@@ -1,30 +1,30 @@
 const {spawn} = require('child_process')
-const {createInterface} = require('readline')
+const {excludeDirs} = require('./utils')
+
 
 const excludeDirsDef = ["/dev/*", "/proc/*", "/sys/*", "/tmp/*",
   "/run/*", "/mnt/*", "/media/*", "/var/run/*", "/var/lock/*",
   "/var/cache/apt/archives/*", "/lost+found", "/home/*/.gvfs",
   "/home/*/.cache", "/home/*/.local/share/Trash","/home/*/.thumbnails/*"]
 
-const excludeDirs = (patterns) =>
-  patterns.map( x => `--exclude=${x}`)
 
-// str -> [str] -> cb(err) -> child_process
-const __rsync = (spawn, createInterface) =>
-  (backupDir, destDir, excludePatterns = excludeDirsDef, cb) => {
-    const rsync = spawn('rsync',
-      [
-        ...excludeDirs(excludePatterns),
-        `--info=progress2`, `-v`, `--delete`, `-aAXHt`,
-        `${backupDir}`, `${destDir}`
+// (str, str, [str]) -> child_process
+const __rsync = spawn =>
+
+  /**
+  * @function rsync
+  * @param  {String} backupDir
+  * @param  {String} destDir
+  * @param  {String[]=} excludePatterns = excludeDirsDef
+  * @returns {Object} child_process
+  */
+  (backupDir, destDir, excludePatterns = excludeDirsDef) =>
+    spawn('rsync', [
+      ...excludeDirs(excludePatterns),
+      `--info=progress2`, `-v`, `--delete`, `-aAXHt`,
+      `${backupDir}`, `${destDir}`
     ])
-    rsync.on('error', x => cb(x) )
-    rsync.stderr.on('data', x => cb(x) )
-    const rl = createInterface({input: rsync.stdout})
-    rl.on('line', x => cb(null, x) )
-    return rsync
-}
 
-const rsync = __rsync(spawn, createInterface)
+const rsync = __rsync(spawn)
 
 module.exports = {rsync, __rsync}

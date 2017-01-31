@@ -1,43 +1,49 @@
-const __fitInTTY = stdout =>
+const rl = require('readline')
+
+const __fitInTTY = stderr =>
   ln => {
     if ( typeof ln === 'string') {
-      if (ln.length < stdout.columns) return ln
-      else return `${ln.slice(0, stdout.columns - 4)}...`
+      if (ln.length < stderr.columns) return ln
+      else return `${ln.slice(0, stderr.columns - 4)}...`
     }
     else return ln
   }
 
-const fitInTTY = __fitInTTY(process.stdout)
+const fitInTTY = __fitInTTY(process.stderr)
 
-// replace the relative line in the tty
-// eg: 1 replaces the current line, 2, the line below, etc.
-// first call will just print the msgs
-// then pass an array with the strings in order to print
-// if null in array, that line will stay the same
+// pass an array with the strings to print in the same line
+/* const log = logger(2) // reserve 2 lines
+log([null, 'some str']) */ // first line will not be changed
 // messages will be truncated to terminal width to keep consistency
+// int -> ([str] -> ())
+const __logger = (rl, stderr, fitInTTY) =>
 // since fitInTTY is unpure, is a dependency injected in __logger to mock
-const __logger = (stdout, fitInTTY) =>
-  fstMsgs => {
-    const ttyLog = stdout.write
+  lines => {
+    // moves down
+    rl.moveCursor(stderr, 0, lines - 1)
 
-    fstMsgs
+    const log = xs => {
+      // moves up
+      rl.moveCursor(stderr, 0, (-xs.length) + 1)
+      xs
       .map(fitInTTY)
-      .forEach( x => ttyLog(`${x}\n`) )
-
-    const editLines = msgs => {
-      // move cursor up at the start and to first col
-      ttyLog( "\x1B[" + msgs.length + "A\r" )
-      msgs
-        .map(fitInTTY)
-        .forEach( x => {
-          if ( x === null ) ttyLog("\x1B[1B\r")
-          // delete the line and print the new one
-          else ttyLog("\x1B[2K" + `${x}\n`)
-        })
+      .forEach( (x, i, arr) => {
+        const isLast = (i === arr.length - 1) ? true : false
+        if ( x === null ) {
+          if (!isLast) rl.moveCursor(stderr, 0, 1)
+        }
+        else {
+          rl.cursorTo(stderr, 0)
+          stderr.write(x)
+          rl.clearLine(stderr, 1)
+          if (!isLast) rl.moveCursor(stderr, 0, 1)
+        }
+      })
     }
-    return editLines
-}
 
-const logger = __logger(process.stdout, fitInTTY)
+    return log
+  }
+
+const logger = __logger(rl, process.stderr, fitInTTY)
 
 module.exports = {logger, __logger, __fitInTTY}

@@ -1,0 +1,5 @@
+exports[`progressInfo handles zeros 1`] = `"0.0kB ░░░░░░░░░ 0.00kB/s SOMETR  0.0% Stalled 0:00:00"`;
+
+exports[`progressInfo returns correct string if bar is NOT in opts 1`] = `"544.2MB 1.0MB/s SOMETR  54.4% 7m35s 0:00:02"`;
+
+exports[`progressInfo returns correct string if bar is in opts 1`] = `"544.2MB ██░░ 1.0MB/s SOMETR  54.4% 7m35s 0:00:02"`;

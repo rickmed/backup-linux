@@ -1,3 +1,5 @@
+exports[`fitInTTY returns the same string ('BBBBBBBBB') 1`] = `"BBBBBBBBB"`;
+
 exports[`fitInTTY should return its input if it is not a string 1`] = `null`;
 
-exports[`fitInTTY truncates str to 9 chars 1`] = `"I wont..."`;
+exports[`fitInTTY truncates AAAAAAAAAAA to 9 chars 1`] = `"AAAAAA..."`;

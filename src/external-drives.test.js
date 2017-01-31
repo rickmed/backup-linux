@@ -1,7 +1,4 @@
-const {
-  externalDrivesImp,
-  execFileCB
-} = require('./external-drives')
+const { externalDrivesImp, execFileCB } = require('./external-drives')
 
 describe('execFileCB', () => {
 
@@ -109,12 +106,10 @@ describe('externalDrives', () => {
 
   it('should call execFile with the correct args', () => {
     const _execFile = jest.fn()
-    const _isRoot = jest.fn(() => true)
-    externalDrivesImp(_execFile, _isRoot)(() => '')
+    externalDrivesImp(_execFile)(() => '')
     const expFirs3Args = [
       'lsblk',
       [
-        '--nodeps',
         '--output=NAME,SIZE,VENDOR,MODEL,HOTPLUG,LABEL,MOUNTPOINT',
         '--json'
       ],
@@ -127,14 +122,6 @@ describe('externalDrives', () => {
     const actLastArg = _execFile.mock.calls[0][3].toString()
     expect(actFirs3Args).toEqual(expFirs3Args)
     expect(actLastArg).toBe(expLastArg)
-  });
-
-  it('should call cb with err if process was not ran as root', () => {
-    const _cb = jest.fn()
-    const _execFile = jest.fn()
-    const _isRoot = jest.fn(() => false)
-    externalDrivesImp(_execFile, _isRoot)(_cb)
-    expect(_cb.mock.calls[0][0]).toBeInstanceOf(Error)
   });
 
 });
