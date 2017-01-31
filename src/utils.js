@@ -26,6 +26,10 @@ const argvToFormatStr = opts => argv => {
       .filter(x => x !== '_') // out yargs' "_"
       .join(' ')
 
+    if (optsStr.length === 0) {
+      return ':total :bar :percentage :rate :eta :elapsed'
+    }
+
     const defaultOrder = 't b p r a e'
     return defaultOrder.split(' ')
       .map(x => optsStr.match(x) ? ':' + opts[x]['alias'] : null)
@@ -59,9 +63,55 @@ const devName = str =>
   str.match(/sd[a-z]{1}\d{1,}/)[0]
 
 
+/**
+* @function excludeDirs
+* @param  {String[]} patterns {description}
+* @return {String[]} {description}
+*/
+const excludeDirs = (patterns) =>
+  patterns.map(x => `--exclude=${x}`)
+
+
+/**
+* @function convertBytes
+* @param  {string} units
+* @param  {number} magnitude
+* @return {number}
+*/
+const convertBytes = (units, magnitude) => {
+  // check if conversion is bytes -> k|M|G or inverse
+  const convert = magnitude > 1000 ?
+    (bytes, exp) => bytes / Math.pow(10, exp) :
+    (scalar, exp) => scalar * Math.pow(10, exp)
+
+  const result =
+    /k/i.test(units) ? convert(magnitude, 3) :
+    /m/i.test(units) ? convert(magnitude, 6) :
+    /g/i.test(units) ? convert(magnitude, 9) :
+    /t/i.test(units) ? convert(magnitude, 12) :
+    magnitude
+
+  return result
+}
+
+
+/**
+* @function bytesToHuman
+* @param  {number} cb
+* @return {string} {description}
+*/
+const bytesToHuman = b =>
+  b >= Math.pow(10, 12) ? `${convertBytes('t', b).toFixed(1)}TB` :
+  b >= Math.pow(10, 9) ? `${convertBytes('g', b).toFixed(1)}GB` :
+  b >= Math.pow(10, 6) ? `${convertBytes('m', b).toFixed(1)}MB` :
+  `${convertBytes('k', b).toFixed(1)}kB`
+
 module.exports = {
   optAlias,
   argvToFormatStr,
   formatDevInfo,
-  devName
+  devName,
+  excludeDirs,
+  convertBytes,
+  bytesToHuman
 }

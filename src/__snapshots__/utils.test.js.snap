@@ -1,0 +1,14 @@
+exports[`excludeDirs returns populated exclude array 1`] = `
+Array [
+  "--exclude=/proc/*",
+  "--exclude=/sys/*",
+]
+`;
+
+exports[`formatDevInfo returns array of correct formatted strings 1`] = `
+Array [
+  "sdc1 LINUX MINT 3.8G in Generic  Flash Disk      ",
+  "sdd3 No_label 1K in ST500LM0 00-SSHD-8GB     ",
+  "sdd4 LNX_BACKUPS 62.9G in ST500LM0 00-SSHD-8GB     ",
+]
+`;

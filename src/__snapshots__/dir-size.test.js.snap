@@ -1,0 +1,28 @@
+exports[`test calls execSync with the correct args 1`] = `
+Array [
+  "du",
+  Array [
+    "--exclude=/dev/*",
+    "--exclude=/proc/*",
+    "--exclude=/sys/*",
+    "--exclude=/tmp/*",
+    "--exclude=/run/*",
+    "--exclude=/mnt/*",
+    "--exclude=/media/*",
+    "--exclude=/var/run/*",
+    "--exclude=/var/lock/*",
+    "--exclude=/var/cache/apt/archives/*",
+    "--exclude=/lost+found",
+    "--exclude=/home/*/.gvfs",
+    "--exclude=/home/*/.cache",
+    "--exclude=/home/*/.local/share/Trash",
+    "--exclude=/home/*/.thumbnails/*",
+    "/some/path",
+    "-s",
+    "--apparent-size",
+  ],
+  Object {
+    "encoding": "utf8",
+  },
+]
+`;

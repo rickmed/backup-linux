@@ -16,7 +16,8 @@ const execFileCB = cb => (err, stdout, stderr) => {
         const {vendor, model, size, name} = x
         return { vendor, model, size, name, partitions }
       })
-    cb(null, devInfo)
+    if (devInfo.length === 0 ) cb(new Error('Could not find any external devices'))
+    else cb(null, devInfo)
   }
 }
 

@@ -2,15 +2,28 @@
 
 const yargs = require('yargs')
 const {opts} = require('./yargs_opts')
-const {argvToFormatStr} = require('./utils')
-const {externalDrives} = require('../external-drives')
+const backup = require('../')
+const {argvToFormatStr, formatDevInfo, devName} = require('../utils')
 
 const yargv = yargs(process.argv)
   .options(opts)
   .strict()
   .help()
+  .argv
 
-externalDrives( (err, data) => {
-  if (err) console.log(err)
-  console.log(JSON.stringify(data, null, 2))
+const progressFormat = argvToFormatStr(opts)(yargv)
+
+backup(progressFormat, (e, res) => {
+  if (e) {
+    console.log(e)
+    process.exitCode = 1
+  }
+  else {
+    const backup_msg = `Backup Completed in ${res.done}. Size: ${res.size}.`
+    if (res.umount) {
+      console.log(backup_msg)
+      console.log('But there was a problem unmounting the device', report.umount.e)
+    }
+    else console.log(backup_msg)
+  }
 })

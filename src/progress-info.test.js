@@ -1,50 +1,11 @@
 const {
-  convertBytes,
   secondsToHuman,
   splitSizeFromUnits,
   eta,
   bar,
-  bytesToHuman,
+  parseRsyncProgress,
   progressInfo
 } = require('./progress-info')
-
-describe('convertBytes', () => {
-
-  const units = ['kB', 'm', 'GB', 'tb']
-
-  it(`coverts from bytes correctly`, () => {
-    const bytes = 1234
-    const converted = [
-      bytes / 1000,
-      bytes / 1000000,
-      bytes / 1000000000,
-      bytes / 1000000000000
-    ]
-    expect(units.map(x => convertBytes(x, bytes))).toEqual(converted)
-  });
-
-  it(`coverts to bytes correctly`, () => {
-    const bytes = 123
-    const converted = [
-      bytes * 1000,
-      bytes * 1000000,
-      bytes * 1000000000,
-      bytes * 1000000000000
-    ]
-    expect(units.map(x => convertBytes(x, bytes))).toEqual(converted)
-  });
-
-  it(`return input if unit is unsupported`, () => {
-    const bytes = 123
-    expect(convertBytes('ZB', bytes)).toEqual(bytes)
-  });
-
-  it(`return input if unit is bytes`, () => {
-    const bytes = 123
-    expect(convertBytes('B', bytes)).toEqual(bytes)
-  });
-
-});
 
 
 describe('secondsToHuman', () => {
@@ -81,6 +42,10 @@ describe('eta', () => {
     expect(eta('1MB/s', (60 + 30) * Math.pow(10, 6))).toBe('1m30s')
   });
 
+  it('returns stalled if rate is 0', () => {
+    expect(eta('0.00MB/s', 10)).toBe('Stalled')
+  });
+
 });
 
 describe('bar', () => {
@@ -89,27 +54,30 @@ describe('bar', () => {
     expect(bar(0.49, 20)).toBe('█████████░░░░░░░░░░░')
   });
 
-});
-
-describe('bytesToHuman', () => {
-
-  const units = ['kB', 'MB', 'GB', 'TB']
-  const size = 1234
-  const sample = [
-    size,
-    size * 1000,
-    size * 1000000,
-    size * 1000000000
-  ]
-
-  units.forEach( (x, i) => {
-    const unit = units[i]
-    it(`formats correctly to ${unit}`, () => {
-      expect(bytesToHuman(sample[i])).toEqual(`1.2${unit}`)
-    });
-  })
+  it('returns empty string when width < 0', () => {
+    expect(bar(0.49, -10)).toBe('')
+  });
 
 });
+
+
+describe('parseRsyncProgress', () => {
+
+  it('returns correctly when progress starts with empty', () => {
+    const _prog = '  217,337  97%   1.0MB/s    0:00:02 (xfr#18319, ir-chk=1431/38371)'
+    expect(parseRsyncProgress(_prog))
+      .toEqual([217337, '1.0MB/s', '0:00:02'])
+  });
+
+  it('returns correctly when progress starts with string', () => {
+    const _prog = '435,5353,217,337  97%   1.0MB/s    0:00:02 (xfr#18319, ir-chk=1431/38371)'
+    expect(parseRsyncProgress(_prog))
+      .toEqual([4355353217337, '1.0MB/s', '0:00:02'])
+  });
+
+
+});
+
 
 describe('progressInfo', () => {
 
@@ -120,7 +88,7 @@ describe('progressInfo', () => {
     const _width = 50
 
     const act = progressInfo(_opts)(_dirSize)(_rsyncProgress)(_width)
-    expect(act.length).toBe(_width)
+    expect(act.length).toBe(_width - 2)
     expect(act).toMatchSnapshot()
   });
 
@@ -131,6 +99,18 @@ describe('progressInfo', () => {
     const _width = 50
 
     const act = progressInfo(_opts)(_dirSize)(_rsyncProgress)(_width)
+    expect(act.length).toBeLessThanOrEqual(_width - 2)
+    expect(act).toMatchSnapshot()
+  });
+
+  it('handles zeros', () => {
+    const _opts = ':total :bar :rate SOMETR  :percentage :eta :elapsed'
+    const _dirSize = 1 * Math.pow(10, 9)  //1GB
+    const _rsyncProgress = '0   0%    0.00kB/s    0:00:00  (xfr#18319, ir-chk=1431/38371)'
+    const _width = 55
+
+    const act = progressInfo(_opts)(_dirSize)(_rsyncProgress)(_width)
+    expect(act.length).toBe(_width - 2)
     expect(act).toMatchSnapshot()
   });
 

@@ -3,9 +3,12 @@ const {mkdir, rmdir} = require('fs')
 
 const __execCB = rmdir => (mountPath, cb) => (err, stdout, stderr) => {
   if (err) {
-    rmdir(mountPath, err => {
-      err.mount = 'Remove mountPath failed on cleanup'
-      cb(err)
+    console.log(err)
+    rmdir(mountPath, e => {
+      if (e) {
+        e.mount = 'Remove mountPath failed on cleanup'
+        cb(e)
+      }
     })
   }
   else cb(null, mountPath)
@@ -25,8 +28,8 @@ const __mount = (execFile, mkdir) =>
     const mountPath = `/tmp/${devName}-${num}`
     mkdir(mountPath, err => {
       if (num === 5) {
-        err.mount = `Failed after trying to create mounting dirs with ${num} different names`
-        cb(err)
+        const e = new Error(`Failed after trying to create mounting dirs with ${num} different names`)
+        cb(e)
       }
       else if (err && err.code === 'EEXIST') {
         reTryIfDirExist(num + 1)

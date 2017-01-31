@@ -1,21 +1,7 @@
+const {bytesToHuman, convertBytes} = require('./utils')
+
 // TODO: change math.power to ** using babel
 
-// str -> int -> int
-const convertBytes = (units, magnitude) => {
-  // check if conversion is bytes -> k|M|G or inverse
-  const convert = magnitude > 1000 ?
-    (bytes, exp) => bytes / Math.pow(10, exp) :
-    (scalar, exp) => scalar * Math.pow(10, exp)
-
-  const result =
-    /k/i.test(units) ? convert(magnitude, 3) :
-    /m/i.test(units) ? convert(magnitude, 6) :
-    /g/i.test(units) ? convert(magnitude, 9) :
-    /t/i.test(units) ? convert(magnitude, 12) :
-    magnitude
-
-  return result
-}
 
 // int -> str
 const secondsToHuman = s => {
@@ -40,26 +26,35 @@ const splitSizeFromUnits = str => {
 const eta = (rate, deltaBytes) => {
   const [rateSize, rateUnits] = splitSizeFromUnits(rate)
   const rateInBytes = convertBytes(rateUnits, rateSize)
-  const deltaSec = Math.floor(deltaBytes / rateInBytes)
-  return secondsToHuman(deltaSec)
+  if (rateInBytes === 0) return 'Stalled'
+  else {
+    const deltaSec = Math.floor(deltaBytes / rateInBytes)
+    return secondsToHuman(deltaSec)
+  }
 }
 
 // int -> int -> int -> str
 const bar = (completedRatio, width) => {
+  width = Math.max(0, width)
   const renderCompleted = Math.floor(completedRatio * width)
   return '█'.repeat(renderCompleted) + '░'.repeat(width - renderCompleted)
 }
 
-// int -> str
-const bytesToHuman = b =>
-  b >= Math.pow(10, 12) ? `${convertBytes('t', b).toFixed(1)}TB` :
-  b >= Math.pow(10, 9) ? `${convertBytes('g', b).toFixed(1)}GB` :
-  b >= Math.pow(10, 6) ? `${convertBytes('m', b).toFixed(1)}MB` :
-  `${convertBytes('k', b).toFixed(1)}kB`
 
 // float -> str
 const percentage = ratio =>
   (ratio * 100).toFixed(1) + '%'
+
+
+// str -> [bytesSent: int, rate: str, elapsed: str]
+parseRsyncProgress = str => {
+  let bytesSent, rate, elapsed
+  const parseBytes = str => parseInt(str.replace(/,/g, ''))
+  if (str[0] === ' ') [ , bytesSent, , rate, elapsed] = str.split(/\s+/)
+  else [bytesSent, , rate, elapsed] = str.split(/\s+/)
+  return [parseBytes(bytesSent), rate, elapsed]
+}
+
 
 /**
 * @function progressInfo Curried
@@ -70,24 +65,23 @@ const percentage = ratio =>
 * @return {string} format populated with data
 */
 const progressInfo = format => dirSize => rsyncProgress => width => {
-  let [bytesSent, , rate, elapsed] = rsyncProgress.split(/\s+/)
-  const bytesSentInt = parseInt(bytesSent.replace(/,/g, ''))
-  const completedRatio = bytesSentInt / dirSize
-  const deltaBytes = dirSize - bytesSentInt
+  let [bytesSent, rate, elapsed] = parseRsyncProgress(rsyncProgress)
+  const completedRatio = bytesSent / parseInt(dirSize)
+  const deltaBytes = dirSize - bytesSent
 
   const populatedMinusBar = format
     .replace(':eta', eta(rate, deltaBytes))
-    .replace(':total', bytesToHuman(bytesSentInt))
+    .replace(':total', bytesToHuman(bytesSent))
     .replace(':percentage', percentage(completedRatio))
     .replace(':rate', rate)
     .replace(':elapsed', elapsed)
 
   if ( !populatedMinusBar.includes(':bar') ) return populatedMinusBar
   else {
-    const availWidth = width - populatedMinusBar.length + ':bar'.length
+    const availWidth = width - populatedMinusBar.length + ':bar'.length - 2
     return populatedMinusBar.replace(':bar', bar(completedRatio, availWidth))
   }
 }
 
-module.exports = {convertBytes, secondsToHuman, eta, splitSizeFromUnits, bar, bytesToHuman, progressInfo}
+module.exports = {convertBytes, secondsToHuman, eta, splitSizeFromUnits, bar, parseRsyncProgress, progressInfo}
 
